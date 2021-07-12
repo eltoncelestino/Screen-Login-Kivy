@@ -1,7 +1,9 @@
 from kivymd.app import MDApp
-from kivymd.uix.card import MDCard 
-from kivymd.uix.floatlayout import FloatLayout
 from kivy.lang import Builder
+from kivymd.uix.card import MDCard
+from kivymd.uix.button import MDRaisedButton 
+from kivymd.uix.floatlayout import FloatLayout
+from kivymd.uix.behaviors import FocusBehavior
 
 KV = '''
 Screen:
@@ -15,10 +17,49 @@ Screen:
 
 <SenhaCard>:
     id: card
+    orientation: 'vertical'
     size_hint: .7, .7
     pos_hint: {'center_x': .5, 'center_y': .5}
-    MDTextField:
-        text: 'Senha antiga'
+
+    MDBoxLayout:
+        size_hint_y: .2
+        padding: ['25dp', '0dp', '25dp', '0dp'] 
+        md_bg_color: app.theme_cls.primary_color
+
+        MDLabel:
+            text:'Mudar senha'
+            theme_text_color: 'Custom'
+            text_color: 1,1,1,1 
+
+        MDIconButton:
+            icon: 'close'
+            theme_text_color: 'Custom'
+            text_color: 1,1,1,1
+            on_release: root.fechar()
+
+    MDFloatLayout: 
+        MDTextField:
+            pos_hint: {'center_x': .5, 'center_y': .8}
+            size_hint_x: .9 
+            hint_text: 'Código enviado por email'
+        
+        MDTextField:
+            password: True
+            pos_hint: {'center_x': .5, 'center_y': .6}
+            size_hint_x: .9
+            hint_text: 'Nova senha: '
+
+        MDTextField:
+            password: True
+            pos_hint: {'center_x': .5, 'center_y': .4}
+            size_hint_x: .9
+            hint_text: 'Confirmar nova senha: '
+        ButtonFocus:
+            size_hint_x: .9
+            pos_hint: {'center_x': .5, 'center_y': .2}
+            text: 'Enviar'
+            focus_color: app.theme_cls.accent_color
+            unfocus_color: app.theme_cls.primary_color
 
 <TelaLogin>:
     MDIconButton:
@@ -32,14 +73,17 @@ Screen:
         pos_hint: {'center_x': .5, 'center_y': .6}
 
     MDTextField:
+        password: True
         size_hint_x: .9
         hint_text: 'Senha:'
         pos_hint: {'center_x': .5, 'center_y': .5}
 
-    MDRaisedButton:
+    ButtonFocus:
         size_hint_x: .9
         pos_hint: {'center_x':.5, 'center_y': .4}
         text: 'Login'
+        focus_color: app.theme_cls.accent_color
+        unfocus_color: app.theme_cls.primary_color
 
     MDLabel:
         pos_hint: {'center_y': .3}
@@ -53,8 +97,12 @@ Screen:
 
 '''
 
-class SenhaCard(MDCard):
+class ButtonFocus(MDRaisedButton, FocusBehavior):
     ...
+
+class SenhaCard(MDCard):
+    def fechar(self):
+        self.parent.remove_widget(self)
 
 class TelaLogin(FloatLayout):
     def abrir_card(self):
@@ -63,6 +111,12 @@ class TelaLogin(FloatLayout):
 
 class MyApp(MDApp):
     def build(self):
+        self.theme_cls.primary_palette = 'Purple' #cores primárias
+        self.theme_cls.accent_palette = 'Purple' #cores secondarias
+        self.theme_cls.primary_hue = '400' #saturação
+
+        #self.theme_cls.theme_style = 'Dark' # tema dark
+
         return Builder.load_string(KV)
 
 MyApp().run()
